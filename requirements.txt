@@ -1,0 +1,6 @@
+Flask==2.3.2            # For setting up the web server
+SQLAlchemy==2.0.20      # For database interactions
+psycopg2-binary==2.9.7  # PostgreSQL database driver (use only if using PostgreSQL)
+requests==2.31.0        # For making API requests (useful for Application 2)
+pytest==7.4.0           # For testing
+flask-cors==3.1.1       # To handle cross-origin requests (if needed)

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Rule Engine</h2>
+        <!-- Form to create a rule -->
+        <div class="form-group">
+            <label for="rule">Enter Rule:</label>
+            <textarea id="rule" placeholder="E.g., (age > 30 AND department = 'Sales') OR (age < 25 AND department = 'Marketing')" rows="4"></textarea>
+        </div>
+        <button onclick="createRule()">Create Rule</button>
+        
+        <!-- Form to evaluate a rule -->
+        <div class="form-group">
+            <label for="data">Enter Data (JSON format):</label>
+            <textarea id="data" placeholder='E.g., {"age": 35, "department": "Sales", "salary": 60000, "experience": 3}' rows="4"></textarea>
+        </div>
+        <button onclick="evaluateRule()">Evaluate Rule</button>
+
+        <!-- Display result -->
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Function to create a rule
+        function createRule() {
+            const rule = document.getElementById("rule").value;
+            fetch('/create_rule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rule: rule })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML = "Rule Created: " + JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById("result").innerHTML = "Error: " + error.message;
+            });
+        }
+
+        // Function to evaluate a rule
+        function evaluateRule() {
+            const rule = document.getElementById("rule").value;
+            const data = document.getElementById("data").value;
+            try {
+                const parsedData = JSON.parse(data);
+                fetch('/evaluate_rule', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ast: rule, data: parsedData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("result").innerHTML = "Evaluation Result: " + data.result;
+                })
+                .catch(error => {
+                    document.getElementById("result").innerHTML = "Error: " + error.message;
+                });
+            } catch (e) {
+                document.getElementById("result").innerHTML = "Invalid JSON data.";
+            }
+        }
+    </script>
+</body>
+</html>
